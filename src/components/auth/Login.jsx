@@ -1,3 +1,4 @@
+// src/components/auth/Login.jsx
 import React, { useState } from "react";
 import { useAuth } from "./AuthProvider";
 
@@ -10,11 +11,17 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    console.log("📝 Formulario login enviado:", { email, password: "••••••" });
+
     try {
       await login(email, password);
+      console.log("✅ Usuario autenticado correctamente");
     } catch (err) {
+      console.error("❌ Error en Login.jsx:", err);
       alert(err.message);
     }
+
     setLoading(false);
   };
 

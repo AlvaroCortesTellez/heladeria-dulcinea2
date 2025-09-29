@@ -1,27 +1,33 @@
 // src/components/productos/ProductoCard.jsx
 import React from "react";
+import Card from "react-bootstrap/Card";
+import ListGroup from "react-bootstrap/ListGroup";
 
-/**
- * ProductoCard (usa clases Bootstrap sin depender de react-bootstrap)
- * Recibe un objeto `producto` ya enriquecido con:
- * - ingredientes (string)
- * - total_calorias
- * - costo
- * - rentabilidad
- */
 const ProductoCard = ({ producto }) => {
+  const ingredientes =
+    producto.producto_ingrediente?.map(
+      (pi) => pi.ingredientes?.nombre
+    ).join(", ") || "Sin ingredientes";
+
   return (
-    <div className="card mb-3" style={{ width: "100%", maxWidth: 520 }}>
-      <div className="card-body">
-        <h5 className="card-title">{producto.nombre}</h5>
-        <p className="card-text mb-1"><strong>Ingredientes: </strong>{producto.ingredientes || "—"}</p>
-        <p className="card-text mb-1"><strong>Calorías: </strong>{producto.total_calorias ?? "—"} kcal</p>
-        <p className="card-text mb-1"><strong>Costo de producción: </strong>{producto.costo != null ? `$${producto.costo}` : "—"}</p>
-        <p className="card-text mb-1"><strong>Precio público: </strong>{producto.precio_publico != null ? `$${producto.precio_publico}` : "—"}</p>
-        <p className="card-text mb-2"><strong>Rentabilidad: </strong>{producto.rentabilidad != null ? `$${producto.rentabilidad}` : "—"}</p>
-        {/* Aquí puedes añadir botones según rol (venta, editar, etc.) */}
-      </div>
-    </div>
+    <Card>
+      <Card.Body>
+        <Card.Title>{producto.nombre}</Card.Title>
+        <ListGroup variant="flush">
+          <ListGroup.Item>Precio: ${producto.precio_publico}</ListGroup.Item>
+          <ListGroup.Item>Tipo: {producto.tipo}</ListGroup.Item>
+          {producto.vaso && (
+            <ListGroup.Item>Vaso: {producto.vaso}</ListGroup.Item>
+          )}
+          {producto.volumen_onzas && (
+            <ListGroup.Item>
+              Volumen: {producto.volumen_onzas} oz
+            </ListGroup.Item>
+          )}
+          <ListGroup.Item>Ingredientes: {ingredientes}</ListGroup.Item>
+        </ListGroup>
+      </Card.Body>
+    </Card>
   );
 };
 

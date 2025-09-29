@@ -1,3 +1,4 @@
+// src/components/productos/ProductosList.jsx
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import ProductoCard from "./ProductoCard";
@@ -7,21 +8,44 @@ const ProductosList = () => {
 
   const fetchProductos = async () => {
     const { data, error } = await supabase
-    .from("v_producto_detalle")
-    .select("*");
-        if (error) console.error(error);
-        else setProductos(data);
-    };
+      .from("productos")
+      .select(`
+        id,
+        nombre,
+        precio_publico,
+        tipo,
+        vaso,
+        volumen_onzas,
+        producto_ingrediente (
+          ingredientes (
+            nombre,
+            calorias,
+            precio
+          )
+        )
+      `);
+
+    if (error) {
+      console.error("❌ Error cargando productos:", error);
+    } else {
+      setProductos(data);
+    }
+  };
 
   useEffect(() => {
     fetchProductos();
   }, []);
 
   return (
-    <div className="d-flex flex-wrap justify-content-start">
-      {productos.map((p) => (
-        <ProductoCard key={p.producto_id} producto={p} onSold={fetchProductos} />
-      ))}
+    <div className="container mt-4">
+      <h3>Productos disponibles</h3>
+      <div className="row">
+        {productos.map((p) => (
+          <div key={p.id} className="col-md-4 mb-3">
+            <ProductoCard producto={p} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
