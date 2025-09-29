@@ -15,7 +15,7 @@ const ProductosList = () => {
         costo,
         rentabilidad,
         total_calorias,
-        producto_ingrediente ( ingrediente(nombre) )
+        producto_ingrediente ( ingredientes(nombre) )
       `);
     if (error) console.error(error);
     else setProductos(data);
