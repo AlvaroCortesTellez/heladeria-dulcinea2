@@ -7,19 +7,11 @@ const ProductosList = () => {
 
   const fetchProductos = async () => {
     const { data, error } = await supabase
-      .from("v_rentabilidad_producto")
-      .select(`
-        producto_id,
-        nombre,
-        precio_publico,
-        costo,
-        rentabilidad,
-        total_calorias,
-        producto_ingrediente ( ingredientes(nombre) )
-      `);
-    if (error) console.error(error);
-    else setProductos(data);
-  };
+    .from("v_producto_detalle")
+    .select("*");
+        if (error) console.error(error);
+        else setProductos(data);
+    };
 
   useEffect(() => {
     fetchProductos();

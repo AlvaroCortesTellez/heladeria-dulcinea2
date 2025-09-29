@@ -1,38 +1,32 @@
-import React, { useState } from "react";
-import SellProductModal from "./SellProductModal";
-import { useAuth } from "../auth/AuthProvider";
+// src/components/productos/ProductoCard.jsx
+import React from "react";
+import Card from "react-bootstrap/Card";
+import ListGroup from "react-bootstrap/ListGroup";
 
-const ProductoCard = ({ producto, onSold }) => {
-  const [showModal, setShowModal] = useState(false);
-  const { user } = useAuth();
-
-  const ingredientes = producto.producto_ingrediente?.map((pi) => pi.ingrediente.nombre).join(", ");
-
+const ProductoCard = ({ producto }) => {
   return (
-    <div className="card m-2" style={{ width: "18rem" }}>
-      <div className="card-body">
-        <h5 className="card-title">{producto.nombre}</h5>
-        <p className="card-text">Ingredientes: {ingredientes || "N/A"}</p>
-        <p className="card-text">Precio público: ${producto.precio_publico}</p>
-        <p className="card-text">Calorías: {producto.total_calorias}</p>
-        <p className="card-text">Costo: ${producto.costo}</p>
-        <p className="card-text">Rentabilidad: ${producto.rentabilidad}</p>
-
-        {(user?.rol === "cliente" || !user) && (
-          <button className="btn btn-success mt-2" onClick={() => setShowModal(true)}>
-            Vender
-          </button>
-        )}
-
-        {showModal && (
-          <SellProductModal
-            producto={producto}
-            onClose={() => setShowModal(false)}
-            onSold={onSold}
-          />
-        )}
-      </div>
-    </div>
+    <Card style={{ width: "18rem", margin: "10px" }}>
+      <Card.Body>
+        <Card.Title>{producto.nombre}</Card.Title>
+        <ListGroup variant="flush">
+          <ListGroup.Item>
+            <strong>Ingredientes:</strong> {producto.ingredientes}
+          </ListGroup.Item>
+          <ListGroup.Item>
+            <strong>Calorías:</strong> {producto.total_calorias} kcal
+          </ListGroup.Item>
+          <ListGroup.Item>
+            <strong>Costo:</strong> ${producto.costo}
+          </ListGroup.Item>
+          <ListGroup.Item>
+            <strong>Precio público:</strong> ${producto.precio_publico}
+          </ListGroup.Item>
+          <ListGroup.Item>
+            <strong>Rentabilidad:</strong> ${producto.rentabilidad}
+          </ListGroup.Item>
+        </ListGroup>
+      </Card.Body>
+    </Card>
   );
 };
 
