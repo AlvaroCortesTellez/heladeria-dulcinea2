@@ -1,4 +1,3 @@
-// src/components/productos/ProductosList.jsx
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import ProductoCard from "./ProductoCard";
@@ -15,8 +14,8 @@ const ProductosList = () => {
         precio_publico,
         costo,
         rentabilidad,
-        producto_ingrediente ( ingrediente(nombre) ),
-        total_calorias
+        total_calorias,
+        producto_ingrediente ( ingrediente(nombre) )
       `);
     if (error) console.error(error);
     else setProductos(data);
@@ -29,7 +28,7 @@ const ProductosList = () => {
   return (
     <div className="d-flex flex-wrap justify-content-start">
       {productos.map((p) => (
-        <ProductoCard key={p.producto_id} producto={p} />
+        <ProductoCard key={p.producto_id} producto={p} onSold={fetchProductos} />
       ))}
     </div>
   );

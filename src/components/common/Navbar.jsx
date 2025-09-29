@@ -1,42 +1,23 @@
-// src/components/common/Navbar.jsx
 import React from "react";
-import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <div className="container">
-        <Link className="navbar-brand" to="/">
-          <img src="/logo.png" alt="Heladería Dulcinea" width="50" className="me-2" />
-          Heladería Dulcinea
-        </Link>
-        <div className="collapse navbar-collapse">
-          <ul className="navbar-nav ms-auto">
-            {user ? (
-              <>
-                <li className="nav-item">
-                  <span className="nav-link">
-                    {user.email} ({user.role || "Cliente"})
-                  </span>
-                </li>
-                <li className="nav-item">
-                  <button className="btn btn-outline-secondary" onClick={logout}>
-                    Logout
-                  </button>
-                </li>
-              </>
-            ) : (
-              <li className="nav-item">
-                <Link className="nav-link btn btn-outline-primary" to="/login">
-                  Login
-                </Link>
-              </li>
-            )}
-          </ul>
-        </div>
+    <nav className="navbar navbar-expand-lg navbar-light bg-light px-3">
+      <a className="navbar-brand" href="/">
+        <img src="/src/assets/images/logo.png" width="40" alt="Logo" /> Heladería Dulcinea
+      </a>
+      <div className="ms-auto">
+        {user ? (
+          <>
+            <span className="me-3">{user.email} ({user.role || "Cliente"})</span>
+            <button className="btn btn-outline-secondary" onClick={logout}>Logout</button>
+          </>
+        ) : (
+          <a className="btn btn-outline-primary" href="/login">Login</a>
+        )}
       </div>
     </nav>
   );

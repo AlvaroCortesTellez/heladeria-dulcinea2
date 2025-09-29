@@ -5,7 +5,10 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error("❌ Supabase URL o ANON KEY no definidas en .env");
+  throw new Error("❌ supabaseUrl o supabaseAnonKey no están definidos en .env");
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: { persistSession: true, autoRefreshToken: true },
+  global: { headers: { apikey: supabaseAnonKey } },
+});

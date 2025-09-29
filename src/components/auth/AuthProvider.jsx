@@ -1,17 +1,14 @@
-// src/components/auth/AuthProvider.jsx
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const session = supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user || null);
-      setLoading(false);
+      if (data.session) setUser(data.session.user);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -22,9 +19,9 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error, data } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
-    return data.user;
+    setUser(data.user);
   };
 
   const logout = async () => {
@@ -33,7 +30,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
