@@ -23,12 +23,16 @@ const Login = () => {
     <form onSubmit={handleSubmit}>
       <h2>Iniciar Sesión</h2>
       <input
+        id="email"
+        name="email"
         type="email"
         placeholder="Correo"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
       <input
+        id="password"
+        name="password"
         type="password"
         placeholder="Contraseña"
         value={password}
