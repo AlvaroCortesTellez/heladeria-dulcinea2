@@ -7,9 +7,9 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light px-3">
       <a className="navbar-brand" href="/">
-        <div class="marca">
+        <div className="marca">
           <img src="/logo.png" width="40" alt="Logo" />
-        <h2 class="titulo">Heladería Dulcinea</h2>
+        <h2 className="titulo">Heladería Dulcinea</h2>
         </div>
       </a>
       <div className="ms-auto">
