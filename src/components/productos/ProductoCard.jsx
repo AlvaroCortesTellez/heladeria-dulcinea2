@@ -1,13 +1,12 @@
-// src/components/productos/ProductoCard.jsx
 import React from "react";
 import Card from "react-bootstrap/Card";
 import ListGroup from "react-bootstrap/ListGroup";
 import Button from "react-bootstrap/Button";
-import { useAuth } from "../auth/AuthProvider";
 import { supabase } from "../../lib/supabaseClient";
+import { useAuth } from "../auth/AuthProvider";
 
-const ProductoCard = ({ producto, role }) => {
-  const { user } = useAuth();
+const ProductoCard = ({ producto }) => {
+  const { role, user } = useAuth();
 
   const ingredientes =
     producto.producto_ingrediente?.map(
@@ -16,15 +15,9 @@ const ProductoCard = ({ producto, role }) => {
 
   const handleCompra = async () => {
     if (!user) {
-      alert("Debes iniciar sesión como cliente para comprar.");
+      alert("Debes iniciar sesión para comprar.");
       return;
     }
-
-    // Calcular costo total de ingredientes
-    const costoIngredientes = producto.producto_ingrediente?.reduce(
-      (total, pi) => total + (pi.ingredientes?.precio || 0),
-      0
-    );
 
     const { error } = await supabase.from("ventas").insert([
       {
@@ -36,10 +29,10 @@ const ProductoCard = ({ producto, role }) => {
     ]);
 
     if (error) {
-      console.error("❌ Error registrando venta:", error);
-      alert("Error registrando la venta.");
+      console.error("❌ Error registrando venta:", error.message);
+      alert("Hubo un error en la compra.");
     } else {
-      alert(`✅ Venta registrada de ${producto.nombre} por $${producto.precio_publico}`);
+      alert(`✅ Has comprado: ${producto.nombre}`);
     }
   };
 
@@ -49,73 +42,43 @@ const ProductoCard = ({ producto, role }) => {
         <Card.Title>{producto.nombre}</Card.Title>
         <ListGroup variant="flush">
           <ListGroup.Item>Precio: ${producto.precio_publico}</ListGroup.Item>
+          <ListGroup.Item>Tipo: {producto.tipo}</ListGroup.Item>
 
-          {/* Cliente */}
-          {role === "cliente" && (
-            <>
-              <ListGroup.Item>
-                Calorías:{" "}
-                {producto.producto_ingrediente?.reduce(
-                  (total, pi) => total + (pi.ingredientes?.calorias || 0),
-                  0
-                )}{" "}
-                kcal
-              </ListGroup.Item>
-              <Button
-                variant="primary"
-                className="mt-2"
-                onClick={handleCompra}
-              >
-                Comprar
-              </Button>
-            </>
+          {/* Mostrar vaso o volumen si aplica */}
+          {producto.vaso && (
+            <ListGroup.Item>Vaso: {producto.vaso}</ListGroup.Item>
+          )}
+          {producto.volumen_onzas && (
+            <ListGroup.Item>Volumen: {producto.volumen_onzas} oz</ListGroup.Item>
           )}
 
-          {/* Empleado */}
-          {role === "empleado" && (
-            <>
-              <ListGroup.Item>
-                Calorías:{" "}
-                {producto.producto_ingrediente?.reduce(
-                  (total, pi) => total + (pi.ingredientes?.calorias || 0),
-                  0
-                )}{" "}
-                kcal
-              </ListGroup.Item>
-              <ListGroup.Item>Ingredientes: {ingredientes}</ListGroup.Item>
-            </>
+          {/* Cliente, Empleado y Admin ven ingredientes */}
+          {(role === "cliente" || role === "empleado" || role === "admin") && (
+            <ListGroup.Item>Ingredientes: {ingredientes}</ListGroup.Item>
           )}
 
-          {/* Admin */}
+          {/* Empleado y Admin ven calorías */}
+          {(role === "empleado" || role === "admin") && (
+            <ListGroup.Item>Calorías: {producto.total_calorias || "N/A"}</ListGroup.Item>
+          )}
+
+          {/* Solo Admin ve costo y rentabilidad */}
           {role === "admin" && (
             <>
+              <ListGroup.Item>Costo: ${producto.costo || "N/A"}</ListGroup.Item>
               <ListGroup.Item>
-                Calorías:{" "}
-                {producto.producto_ingrediente?.reduce(
-                  (total, pi) => total + (pi.ingredientes?.calorias || 0),
-                  0
-                )}{" "}
-                kcal
+                Rentabilidad: ${producto.rentabilidad || "N/A"}
               </ListGroup.Item>
-              <ListGroup.Item>
-                Costo: $
-                {producto.producto_ingrediente?.reduce(
-                  (total, pi) => total + (pi.ingredientes?.precio || 0),
-                  0
-                )}
-              </ListGroup.Item>
-              <ListGroup.Item>
-                Rentabilidad: $
-                {producto.precio_publico -
-                  producto.producto_ingrediente?.reduce(
-                    (total, pi) => total + (pi.ingredientes?.precio || 0),
-                    0
-                  )}
-              </ListGroup.Item>
-              <ListGroup.Item>Ingredientes: {ingredientes}</ListGroup.Item>
             </>
           )}
         </ListGroup>
+
+        {/* Solo cliente ve botón de compra */}
+        {role === "cliente" && (
+          <Button variant="success" className="mt-3" onClick={handleCompra}>
+            🛒 Comprar
+          </Button>
+        )}
       </Card.Body>
     </Card>
   );

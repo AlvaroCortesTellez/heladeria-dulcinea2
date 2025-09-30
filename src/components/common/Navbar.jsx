@@ -7,7 +7,10 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light px-3">
       <a className="navbar-brand" href="/">
-        <img src="/src/assets/images/logo.png" width="40" alt="Logo" /> Heladería Dulcinea
+        <marca>
+          <img src="/logo.png" width="40" alt="Logo" />
+        <h2 class="titulo">Heladería Dulcinea</h2>
+        </marca>
       </a>
       <div className="ms-auto">
         {user ? (
