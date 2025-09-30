@@ -1,4 +1,3 @@
-// src/components/auth/AuthProvider.jsx
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 
@@ -6,55 +5,82 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [role, setRole] = useState("publico"); // por defecto "público"
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Log inicial de configuración
-    console.log("✅ Supabase URL:", import.meta.env.VITE_SUPABASE_URL);
-    console.log("✅ Supabase Anon Key:", import.meta.env.VITE_SUPABASE_ANON_KEY?.slice(0, 10) + "...");
+    const getUserData = async (sessionUser) => {
+      if (!sessionUser) {
+        setRole("publico");
+        return;
+      }
 
-    supabase.auth.getSession().then(({ data, error }) => {
+      // buscamos el rol desde la tabla users
+      const { data, error } = await supabase
+        .from("users")
+        .select("rol, nombre")
+        .eq("id", sessionUser.id)
+        .single();
+
       if (error) {
-        console.error("❌ Error obteniendo sesión:", error.message);
+        console.error("❌ Error obteniendo rol:", error.message);
+        setRole("publico");
+      } else {
+        console.log("✅ Rol cargado:", data.rol);
+        setRole(data.rol);
       }
+    };
+
+    supabase.auth.getSession().then(({ data }) => {
       if (data?.session) {
-        console.log("➡️ Sesión encontrada en useEffect:", data.session);
         setUser(data.session.user);
+        getUserData(data.session.user);
+      } else {
+        setUser(null);
+        setRole("publico");
       }
+      setLoading(false);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("🔄 Cambio en estado de auth:", _event, session);
       setUser(session?.user || null);
+      if (session?.user) {
+        getUserData(session.user);
+      } else {
+        setRole("publico");
+      }
     });
 
     return () => listener.subscription.unsubscribe();
   }, []);
 
   const login = async (email, password) => {
-    console.log("🔑 Intentando login con:", email, "(password oculto)");
-
     const { error, data } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) {
-      console.error("❌ Error en login:", error.message, error);
-      throw error;
-    }
+    if (error) throw error;
 
-    console.log("✅ Login exitoso:", data);
     setUser(data.user);
+    // cargar rol
+    const { data: userData } = await supabase
+      .from("users")
+      .select("rol")
+      .eq("id", data.user.id)
+      .single();
+
+    setRole(userData?.rol || "publico");
   };
 
   const logout = async () => {
-    console.log("🚪 Cerrando sesión...");
     await supabase.auth.signOut();
     setUser(null);
+    setRole("publico");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, role, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

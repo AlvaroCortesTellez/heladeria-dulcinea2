@@ -2,9 +2,11 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import ProductoCard from "./ProductoCard";
+import { useAuth } from "../auth/AuthProvider";
 
 const ProductosList = () => {
   const [productos, setProductos] = useState([]);
+  const { role } = useAuth();
 
   const fetchProductos = async () => {
     const { data, error } = await supabase
@@ -42,7 +44,7 @@ const ProductosList = () => {
       <div className="row">
         {productos.map((p) => (
           <div key={p.id} className="col-md-4 mb-3">
-            <ProductoCard producto={p} />
+            <ProductoCard producto={p} role={role} />
           </div>
         ))}
       </div>
