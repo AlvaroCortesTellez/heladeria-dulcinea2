@@ -7,10 +7,10 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light px-3">
       <a className="navbar-brand" href="/">
-        <marca>
+        <div class="marca">
           <img src="/logo.png" width="40" alt="Logo" />
         <h2 class="titulo">Heladería Dulcinea</h2>
-        </marca>
+        </div>
       </a>
       <div className="ms-auto">
         {user ? (
