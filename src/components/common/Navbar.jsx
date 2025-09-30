@@ -2,7 +2,7 @@ import React from "react";
 import { useAuth } from "../auth/AuthProvider";
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user, role, logout } = useAuth();
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light px-3">
@@ -12,7 +12,7 @@ const Navbar = () => {
       <div className="ms-auto">
         {user ? (
           <>
-            <span className="me-3">{user.email} ({user.role || "Cliente"})</span>
+            <span className="me-3">{user.email} ({role})</span>
             <button className="btn btn-outline-secondary" onClick={logout}>Logout</button>
           </>
         ) : (
